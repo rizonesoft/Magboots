@@ -1,0 +1,25 @@
+# Build output
+build/
+
+# Local deployment (shims + config)
+bin/
+*.exe
+*.obj
+*.o
+
+# Portable tools (downloaded separately)
+portable/
+# IDE
+.vs/
+.vscode/
+*.sln
+*.vcxproj*
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# User-specific config (keep examples)
+tools.ini
+!config/tools.ini.example

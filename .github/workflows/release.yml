@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        arch: [x64, arm64]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup LLVM-MinGW
+      run: |
+        $url = "https://github.com/mstorsjo/llvm-mingw/releases/download/20260127/llvm-mingw-20260127-ucrt-x86_64.zip"
+        Invoke-WebRequest -Uri $url -OutFile llvm-mingw.zip
+        Expand-Archive llvm-mingw.zip -DestinationPath .
+        Rename-Item llvm-mingw-20260127-ucrt-x86_64 llvm-mingw
+        echo "$PWD\llvm-mingw\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+      shell: pwsh
+    
+    - name: Build Magboots (${{ matrix.arch }})
+      run: .\scripts\build.ps1 -Release -Arch ${{ matrix.arch }}
+      shell: pwsh
+    
+    - name: Create release package
+      run: |
+        $arch = "${{ matrix.arch }}"
+        mkdir release-$arch
+        Copy-Item build/magboots*.exe release-$arch/
+        Copy-Item config/*.example release-$arch/
+        Copy-Item README.md release-$arch/
+        Copy-Item LICENSE release-$arch/
+        Copy-Item -Recurse docs release-$arch/
+        Compress-Archive -Path release-$arch/* -DestinationPath "Magboots-${{ github.ref_name }}-windows-$arch.zip"
+      shell: pwsh
+    
+    - name: Upload release artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-${{ matrix.arch }}
+        path: Magboots-${{ github.ref_name }}-windows-${{ matrix.arch }}.zip
+
+  publish-release:
+    needs: build-and-release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: artifacts/**/*.zip
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

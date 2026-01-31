@@ -1,0 +1,43 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        arch: [x64, arm64]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup LLVM-MinGW
+      run: |
+        # Download LLVM-MinGW
+        $url = "https://github.com/mstorsjo/llvm-mingw/releases/download/20260127/llvm-mingw-20260127-ucrt-x86_64.zip"
+        Invoke-WebRequest -Uri $url -OutFile llvm-mingw.zip
+        Expand-Archive llvm-mingw.zip -DestinationPath .
+        Rename-Item llvm-mingw-20260127-ucrt-x86_64 llvm-mingw
+        echo "$PWD\llvm-mingw\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+      shell: pwsh
+    
+    - name: Create build directory
+      run: mkdir -p build
+      shell: bash
+    
+    - name: Build Magboots (${{ matrix.arch }})
+      run: |
+        .\scripts\build.ps1 -Release -Arch ${{ matrix.arch }}
+      shell: pwsh
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: magboots-windows-${{ matrix.arch }}
+        path: build/magboots*.exe
+        retention-days: 30

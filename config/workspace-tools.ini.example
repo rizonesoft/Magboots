@@ -1,0 +1,26 @@
+; =============================================================================
+; Workspace-Specific Tool Configuration
+; =============================================================================
+; Place this file in: .magboots/tools.ini within your project root
+;
+; The shim walks UP the directory tree from the current working directory
+; until it finds a .magboots folder with tools.ini or reaches the root.
+;
+; Only specify tools that DIFFER from your global tools.ini
+;
+; Example project structure:
+;   D:\Projects\LegacyApp\
+;   ├── .magboots\
+;   │   └── tools.ini    ← This file
+;   ├── src\
+;   └── composer.json
+; =============================================================================
+
+; Example: Use PHP 7.4 for this legacy project
+; php = C:\Magboots\portable\php-7.4\php.exe
+
+; Example: Use a specific Node.js version
+; node = C:\Magboots\portable\node-18\node.exe
+
+; Example: Use project-local Python virtual environment
+; python = .\.venv\Scripts\python.exe

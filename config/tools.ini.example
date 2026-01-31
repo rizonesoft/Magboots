@@ -1,0 +1,40 @@
+; =============================================================================
+; Magboots - Global Tools Configuration
+; =============================================================================
+; This file defines the DEFAULT tool paths used when no workspace-specific
+; .magboots/tools.ini is found.
+;
+; Format: toolname = /path/to/executable
+;
+; The shim executable name determines which tool is looked up:
+;   - php.exe   → looks for 'php' entry
+;   - git.exe   → looks for 'git' entry
+;   - node.exe  → looks for 'node' entry
+; =============================================================================
+
+; -----------------------------------------------------------------------------
+; SYSTEM PASSTHROUGH
+; Route to existing system installations (preserves auth, SSH keys, etc.)
+; Use 'where <tool>' in CMD to find the system path
+; -----------------------------------------------------------------------------
+git = C:\Program Files\Git\bin\git.exe
+gh  = C:\Program Files\GitHub CLI\gh.exe
+
+; -----------------------------------------------------------------------------
+; PORTABLE TOOLS
+; Route to portable/versioned tool installations
+; Modify these paths to match your Magboots installation
+; -----------------------------------------------------------------------------
+; php = C:\Magboots\portable\php-8.3\php.exe
+; python = C:\Magboots\portable\python-3.12\python.exe
+; node = C:\Magboots\portable\node-20\node.exe
+; npm = C:\Magboots\portable\node-20\npm.cmd
+; composer = C:\Magboots\portable\composer\composer.bat
+
+; -----------------------------------------------------------------------------
+; NOTES
+; -----------------------------------------------------------------------------
+; - Lines starting with ; or # are comments
+; - Only uncomment and configure tools you actually have installed
+; - Paths with spaces work fine (no quotes needed in this file)
+; - The shim inherits all environment variables, so SSH keys and auth work
